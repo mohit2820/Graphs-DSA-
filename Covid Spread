@@ -1,0 +1,104 @@
+Link : https://www.geeksforgeeks.org/problems/covid-spread--141631/1
+
+
+class Solution {
+    
+    // kya ham valid row , col access kar rhe hai ya nhi 
+    public boolean directionCheck(int i , int j, int row , int col){
+        
+        // valid index to check in the matrix 
+        return i>=0 && i<row && j>=0 && j<col; 
+    }
+    public int helpaterp(int[][] hospital) {
+        
+        Queue<Pair> q = new LinkedList<>();
+        // row , col store karega -> jinko corona ho rakha hai 
+        
+        int row = hospital.length;
+        int col = hospital[0].length;
+        int healthyCount = 0;   // kitne patient healty hai ie. 1 hai 
+        
+        // jinko corona hai unko daldo queue mai 
+        for(int i=0; i<row; i++)
+        for(int j=0; j<col; j++){
+            
+            if(hospital[i][j]==2) q.add(new Pair(i,j)); 
+            else if(hospital[i][j]==1) healthyCount++;
+        } 
+        
+        
+        
+        // man lo agar pura hai 0 se fill hai 
+       // 2 x 3  (waise ek test case hai , mera code fail ho gya tha)
+      //  0 0 0
+     //   0 0 0
+     
+     // to koi bi infected nhi hoga time = 0 , kyo ki koi hai hi nhi infect karne ke liye 
+     
+        int timer = 0; 
+        if(healthyCount==0) return timer; 
+        //                   down     up      right    left
+        int[][] direction = {{1,0} , {-1,0} , {0,1} , {0,-1}};
+        
+        
+        while(!q.isEmpty()){
+            
+            boolean infectedThisRound = false; // har round mai false set hoga , ki koi patient infect hua hai ya nhi 
+            // agar patient infect hua hoga tabhi time ko badhao , warna increase mat karo 
+            // har iteration mai agar ek patient bi infect ho gya to time increase kar denge 
+            
+            int currentPatient = q.size();  // abhi queue kitne patient hai wo store kar rha hai 
+            
+            while(currentPatient>0){
+                
+                Pair pair = q.poll();
+                int i = pair.row;
+                int j = pair.col;
+                
+                // har corona ka patient 4 direction mai corona ka felayega 
+                // har patient ke liye loop chalega 4 bar (for 4 diff. directions)
+                for(int k=0; k<4; k++){
+                    
+                    int newI = i + direction[k][0];
+                    int newJ = j + direction[k][1];
+                    
+                    if(directionCheck(newI, newJ, row, col) && hospital[newI][newJ]==1){
+                        
+                        hospital[newI][newJ] = 2; // isko corona karo 
+                        q.add(new Pair(newI , newJ)); // queue mai daldo new patient ko
+                        healthyCount--;   // kyo ki ab ek healty person kam ho gya hai 
+                        infectedThisRound = true;  // haan patient infected hai 
+                    }
+                }
+                
+                
+                currentPatient--;
+                
+            }
+            
+            if(infectedThisRound==true) timer++;  // ab timer ka value bada do 
+
+            
+        }
+        
+        
+        // ab dekho agar koi patient bacha hai ya nhi jisko corona nhi hua 
+        if(healthyCount>0) return -1; 
+        
+        return timer;
+    }
+}
+
+
+
+// custom class for Queue (row , col) store karne ke liye 
+class Pair {
+    
+    int row;
+    int col;
+    
+    Pair(int row , int col){
+        this.row = row;
+        this.col = col;
+    }
+}
