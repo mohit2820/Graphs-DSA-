@@ -1,0 +1,116 @@
+// Link : https://www.geeksforgeeks.org/problems/alien-dictionary/1
+
+class Solution {
+    public String findOrder(String[] words) {
+        
+        // 🧺 not a optimal way but , thik thak code hai 
+        // 🧠 phle set mai sare unique character dalo 
+        Set<Character> set = new HashSet<>();
+        
+        // 📦 String array ke sare words set mai dal rhe hai 
+        for(String word : words){
+            for(char c : word.toCharArray()) set.add(c);
+        }
+        
+        int K = 26; // 🔤 K -> Total unique character ie. total alphabets 
+        
+        ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+        
+        // 🧱 initialize with empty array list 
+        for(int i=0; i<K; i++) adj.add(new ArrayList<>());
+        
+        // 🧠 adjacency list mai mapping karo (Integer form mai)
+        // 📐 we know : ascci value
+        // 'a' -> iski decimal value : 97 , 'z' -> 122
+        // 📜 question mai given hai : words[i] consists only of lowercase English letters.
+        
+        // 🧪 Test Case - 1 
+        // 🧩 agar words hai ["baa", "abcd", "abca", "cab", "cad"]
+        // ✅ b -> a (b phle ayega a se)
+        // ✅ abcd | abca (abc same hai) so d -> a (d phle ayega a se)
+        // ✅ abca | cab  , a -> c (a phle ayega c se)
+        // ✅ cab | cad  (ca prefix same hai dono mai) b -> d (b phle ayega d se)
+        
+        // 🧪 Test Case -2 (Most Imp.)
+        // 🧩 words = ["ab", "abc", "bca", "bd", "ce"]
+        // ✅ ab | abc  (no mapping) (a dono mai hai , b dono mai sab) 
+        // ✅ phle wali choti hai string ab < abc (but valid hai) , it means ab phle ayega abc se just like normal dictionary words
+        // ✅ abc | bca  , a -> b 
+        // ✅ bca | bd , c -> d
+        // ✅ bd | ce , b -> c
+        
+        // 🧪 Test Case - 3 (Most Imp.)
+        // 🧩 words = ["xylophone", "xyl", "apple", "ap", "banana"]
+        // ❌ agar khi bhi phli string badhi ho dusri string se 
+        // ❌ eg. xylophone || xvl  (x same , y same , l same) , we know xyl < xylophone
+        // ❌ xyl phle ana chiye tha (acc. to dictionary rule)
+        // ❌ abhi first word mai "ophone" part ham match hi ni kara sakte hai niche wali to choti hai puri compare ho chuki hai 
+        // ❌ so yeh ek invalid order mai 
+        // 📜 question mai given hai : However, if the given arrangement of words is inconsistent with any possible letter ordering, return an empty string ("").
+        // 🚫 baki check hi mat karo seedha return karo "" (not valid , contradiction agya)
+        
+        // 📌 acc. to question TestCase -1 & 2  are valid , now let's code 
+        
+        int n = words.length;
+        int[] inDegree = new int[K];  // 📊 Khan's Algo 
+        // 🧠 K -> hame K ka exact value nhi pata or letter ka order bhi nhi pata 
+        // ❓ sequential nhi honge like from a , b , c it can be p , q ,r or x , y ,z 
+        // 📌 K is taken as 26 
+        
+        for(int i=0; i<n-1; i++){
+            
+            String word1 = words[i];
+            String word2 = words[i+1]; 
+            // 🧠 ham i or i+1 access kar rhe hai jab i = n-1 hoga tab i or i+1 access hoga ie. why ham loop i<n-1 tak chala rhe hai 
+            // 🛡️ when i = n-2 which is < n-1 so word1[n-2] , word2[n-2+1] -> word2[n-1] , invalid access se bach rhe hai 
+            
+            int p = 0;
+            int r = 0;
+            // 🔍 for string comparsion 
+            
+            while(p<word1.length() && r<word2.length() && word1.charAt(p)==word2.charAt(r)){
+                p++;
+                r++;
+            }
+            
+            // ❌ Test Case -3 (Invalid)
+            // ❌ abc 
+            // ❌ ab    (contradiction)
+            if(p<word1.length() && r==word2.length()) return "";
+            
+            else if(p<word1.length() && r<word2.length()){
+                
+                int u = word1.charAt(p) - 'a';  
+                // 🧮 eg .  e - a (asscii value = 101 - 97 = 4 ) 
+                // 🔠 a b c ...z (0 - a , 1 - b , 2 -c , 3 - d , 4 -e , 5 -f .... z - 25)
+                int v = word2.charAt(r) - 'a';
+                
+                adj.get(u).add(v);  // 🔗 DAG 
+                inDegree[v]++;
+            }
+        }
+        
+        // 🚪 Queue for topological sort
+        Queue<Integer> q = new LinkedList<>();
+        for(int i=0; i<K; i++){
+            if(inDegree[i]==0 && set.contains( (char) (i + 'a'))) q.add(i);
+        }
+        
+        String ans = "";
+        while(!q.isEmpty()){
+            
+            int top = q.poll();
+            ans += (char) ('a' + top); // 🔡 type case back to char
+            // 🧭 toplogical sort order chiye hamko 
+            
+            for(int i=0; i<adj.get(top).size(); i++){
+                int current = adj.get(top).get(i);
+                inDegree[current]--;
+                if(inDegree[current]==0) q.add(current); 
+            }
+        }
+        
+        // 🔍 cycle detection 
+        return (ans.length()==set.size()) ? ans : "";
+    }
+}
