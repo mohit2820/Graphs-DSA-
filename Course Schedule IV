@@ -1,0 +1,64 @@
+class Solution {
+
+    
+    public List<Boolean> checkIfPrerequisite(int numCourses, int[][] prerequisites, int[][] queries) {
+        
+        ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+        for(int i=0; i<numCourses; i++) adj.add(new ArrayList<>());
+
+        int[] inDegree = new int[numCourses];
+        // adjacency list banao 
+        for(int j=0; j<prerequisites.length; j++){
+            adj.get(prerequisites[j][0]).add(prerequisites[j][1]);
+            inDegree[prerequisites[j][1]]++;   // In Degree nikal lo 
+        }
+
+        Queue<Integer> q = new LinkedList<>();
+
+        for(int i=0; i<numCourses; i++) if(inDegree[i]==0) q.add(i);   // queue mai dalo 
+
+
+        Map<Integer , Set<Integer>> map = new HashMap<>();
+        while(!q.isEmpty()){
+
+            int top = q.poll();
+
+            for(int i=0; i<adj.get(top).size(); i++){
+
+                int current = adj.get(top).get(i); 
+
+                // map mai dalo 
+                // eg : 1 -> 2 
+                // top = 1 
+                // current = 2 
+                // 2 -> {1}
+                map.computeIfAbsent(current , k -> new HashSet<>()).add(top);
+                // add all the list of all the neighbours of top 
+                // map mai sirf ek hi entry hai ie. 2 -> {1}
+                // so getOrDefault will search key ie. 1 (but will not find it)
+                // so it will return an empty set ie. {}
+                map.get(current).addAll(map.getOrDefault(top , new HashSet<>()));
+
+
+                // main logic 
+                inDegree[current]--;
+                if(inDegree[current]==0) q.add(current);
+            }
+        }
+
+
+        ArrayList<Boolean> result = new ArrayList<>();
+        for(int i=0; i<queries.length; i++){
+
+            int u = queries[i][0];
+            int v = queries[i][1];
+
+            result.add(map.getOrDefault(v, new HashSet<>()).contains(u));
+        }
+        
+
+
+        return result;
+    }
+}
+
