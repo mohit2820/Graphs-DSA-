@@ -1,0 +1,67 @@
+class Solution {
+    public int[] dijkstra(int V, int[][] edges, int src) {
+        
+        
+        // step -1 (Adjacency list banao)
+        ArrayList<ArrayList<Pair>> adj = new ArrayList<>();
+        
+        for(int i=0; i<V; i++) adj.add(new ArrayList<>());
+        
+        for(int j=0; j<edges.length; j++){
+            
+            int u = edges[j][0];
+            int v = edges[j][1];
+            int w = edges[j][2];
+            
+            adj.get(u).add(new Pair(v,w));
+        }
+        
+        
+        boolean[] visited = new boolean[V];
+        int[] distance = new int[V];
+        Arrays.fill(distance, Integer.MAX_VALUE);
+        distance[src] = 0;
+        PriorityQueue<Pair> pq = new PriorityQueue<>((a,b) -> a.w-b.w);
+        pq.add(new Pair(src , distance[src]));   // add vertex , weight 
+        
+        
+        while(!pq.isEmpty()){
+            
+            Pair pair = pq.poll();
+            int node = pair.v;
+
+            visited[node] = true; 
+            
+            
+            // explore the neighbours 
+            for(int j=0; j<adj.get(node).size(); j++){
+                
+                Pair inPair = adj.get(node).get(j);
+                int v = inPair.v;
+                int w = inPair.w; 
+                
+                if(!visited[v] && distance[node] + w < distance[v]){
+                    distance[v] = distance[node] + w;
+                    pq.add(new Pair(v , distance[v]));
+                }
+            }
+            
+        }
+        
+        
+        return distance;
+        
+        
+    }
+}
+
+class Pair {
+    
+    int v;
+    int w;
+    
+    Pair(int v , int w){
+        this.v = v;
+        this.w = w;
+    }
+}
