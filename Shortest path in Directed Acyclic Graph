@@ -1,0 +1,88 @@
+class Solution {
+    
+    void dfs(ArrayList<ArrayList<Pair>> adj , int node , Stack<Integer> st , boolean[] visited){
+        
+        visited[node] = true;  // mark karo 
+        
+        // explore the neighbour nodes till the end 
+        
+        for(int i=0; i<adj.get(node).size(); i++){
+            
+            Pair pair = adj.get(node).get(i);
+            int current = pair.v; 
+            
+            // agar current node visited nhi hai to explore karo 
+            if(!visited[current]) dfs(adj , current , st , visited);
+        }
+        
+        // path end hote hi stack mai push kardo 
+        st.push(node);
+    }
+
+    public int[] shortestPath(int V, int E, int[][] edges) {
+        
+        ArrayList<ArrayList<Pair>> adj = new ArrayList<>();
+        
+        // adjacency list banao 
+        for(int i=0; i<V; i++) adj.add(new ArrayList<>());
+        
+        
+        for(int j=0; j<E; j++){
+            
+            int u = edges[j][0];
+            int v = edges[j][1];
+            int w = edges[j][2];
+            
+            adj.get(u).add(new Pair(v , w));
+        }
+        
+        
+        int[] distance = new int[V];
+        boolean[] visited = new boolean[V];
+        Arrays.fill(distance , Integer.MAX_VALUE);
+        distance[0] = 0; // source node ka distance 
+        
+        // find the topological sort 
+        // graph DAG hai 
+        Stack<Integer> st = new Stack<>();  // stack to store the order 
+        dfs(adj , 0 , st , visited);
+        
+        
+        while(!st.isEmpty()){
+            
+            int top = st.pop(); // top element nikal lo 
+            
+            for(int i=0; i<adj.get(top).size(); i++){
+            
+                Pair pair = adj.get(top).get(i);
+                int weight = pair.w;
+                int v = pair.v;
+                
+                distance[v] = Math.min(distance[v] , weight + distance[top]);
+                
+            }
+        }
+        
+        
+        
+        for(int i=0; i<V; i++) if(distance[i]==Integer.MAX_VALUE) distance[i] = -1;
+        
+        
+        return distance;
+    }
+}
+
+
+class Pair {
+    
+    // agar u , v (vertex given hai )
+    // u -> [v , w] 
+    // adjacency list helper class to hold the v vertex and weight b/w (u & v)
+    int v; // neighbour vertex 
+    int w; // weight b/w (u & v) 
+    
+    Pair(int v , int w){
+        this.v = v;
+        this.w = w;
+    }
+}
