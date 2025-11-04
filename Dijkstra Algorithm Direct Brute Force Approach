@@ -1,0 +1,77 @@
+class Solution {
+    public int[] dijkstra(int V, int[][] edges, int src) {
+        
+        
+        // step -1 (Adjacency list banao)
+        ArrayList<ArrayList<Pair>> adj = new ArrayList<>();
+        
+        for(int i=0; i<V; i++) adj.add(new ArrayList<>());
+        
+        for(int j=0; j<edges.length; j++){
+            
+            int u = edges[j][0];
+            int v = edges[j][1];
+            int w = edges[j][2];
+            
+            adj.get(u).add(new Pair(v,w));
+        }
+        
+        
+        boolean[] visited = new boolean[V];
+        int[] distance = new int[V];
+        Arrays.fill(distance, Integer.MAX_VALUE);
+        
+        int count = V; // number of times loop will run 
+        // for each vertex we will find the shortest path from the source 
+        
+        distance[src] = 0; // src -> src (0 distance)
+        
+        
+        while(count > 0){
+            
+            int value = Integer.MAX_VALUE , node = -1;
+            
+            // find the min. value from distance 
+            for(int i=0; i<V; i++){
+                
+                if(!visited[i] && value > distance[i]){
+                    value = distance[i]; 
+                    node = i;
+                }
+            }
+            
+            visited[node] = true; 
+            
+            
+            // explore the neighbours 
+            for(int j=0; j<adj.get(node).size(); j++){
+                
+                Pair pair = adj.get(node).get(j);
+                int v = pair.v;
+                int w = pair.w; 
+                
+                if(!visited[v] && distance[node] + w < distance[v]){
+                    distance[v] = distance[node] + w;
+                }
+            }
+            
+            count--;  // explore the rest of vertex 
+        }
+        
+        
+        return distance;
+        
+        
+    }
+}
+
+class Pair {
+    
+    int v;
+    int w;
+    
+    Pair(int v , int w){
+        this.v = v;
+        this.w = w;
+    }
+}
