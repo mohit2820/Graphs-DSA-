@@ -1,0 +1,44 @@
+class Solution {
+    public int[] shortestPath(ArrayList<ArrayList<Integer>> adj, int src) {
+    
+         
+        int n = adj.size();
+        Queue<Integer> q = new LinkedList<>();
+        boolean[] visited = new boolean[n];
+        int[] distance = new int[n];    
+        
+        Arrays.fill(distance , -1); 
+        // agar graph disconnected hai to we already filled with -1 , obviously soruce se connect hi nhi ho sakta 
+        // edge case handled 
+        
+        q.add(src);
+        distance[src] = 0;
+        visited[src] = true;
+        
+        
+        while(!q.isEmpty()){
+            
+            int top = q.poll();
+            
+            for(int i=0; i<adj.get(top).size(); i++){
+                
+                int current = adj.get(top).get(i);
+                
+                if(visited[current]) continue;  // agar visted ho to skip kardo 
+                
+                
+                // else wala case not visited 
+                
+                visited[current] = true;  // mark it visited 
+                q.add(current);  // add to queue
+                distance[current] = distance[top] + 1;
+                
+            }
+        }
+        
+        
+        
+      return distance;  
+        
+    }
+}
