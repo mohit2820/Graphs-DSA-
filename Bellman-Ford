@@ -1,0 +1,57 @@
+
+class Solution {
+    public int[] bellmanFord(int V, int[][] edges, int src) {
+        
+        // distance array to store the distances from source node 
+        int[] distance = new int[V];
+        int infinite = (int) 1e8;  // 1e8 => 1 x 10^8 (value floating hoti hai so typecasted)
+        Arrays.fill(distance , infinite);
+        distance[src] = 0;  // src <-> src distance will be 0 
+        
+        // relax edges V-1 times 
+        
+        for(int i=0; i<V-1; i++){
+            
+            boolean flag = false;
+            for(int j=0; j<edges.length; j++){
+                
+                int u = edges[j][0];
+                int v = edges[j][1];
+                int w = edges[j][2];
+                
+                if(distance[u]==infinite) continue; 
+                
+                if(distance[u] + w < distance[v]){
+                    distance[v] = distance[u] + w;
+                    flag = true;
+                }
+            }
+            
+            // V-1 times se phle hi relax ho gyi sari edges 
+            if(!flag) return distance;
+        }
+        
+        
+        
+        // detect cyle 
+        for(int i=0; i<V-1; i++){
+            
+            for(int j=0; j<edges.length; j++){
+                
+                int u = edges[j][0];
+                int v = edges[j][1];
+                int w = edges[j][2];
+                
+                if(distance[u]==infinite) continue; 
+                
+                // agar distance ek bar bhi update ho gya to cycle hai ji 
+                if(distance[u] + w < distance[v]){
+                    return new int[] {-1}; 
+                }
+            }
+        }
+        
+        
+        return distance;
+    }
+}
