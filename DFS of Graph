@@ -1,0 +1,34 @@
+https://www.geeksforgeeks.org/problems/depth-first-traversal-for-a-graph/1
+
+class Solution {
+    
+    ArrayList<Integer> ans; 
+    
+    void bfs(ArrayList<ArrayList<Integer>> adj , boolean[] visited , int node){
+        
+        visited[node] = true;  // mark kardo node ko visited
+        ans.add(node);  // list mai add kardo 
+        
+        for(int i=0; i<adj.get(node).size(); i++){   // explore karo sare node us visited node ke 
+            
+            int currentNode = adj.get(node).get(i);   // phla node uthao 
+            if(!visited[currentNode]) bfs(adj , visited , currentNode);  // not visited ho to recusively call karo or explore karo 
+            
+        }
+        
+        
+    }
+    public ArrayList<Integer> dfs(ArrayList<ArrayList<Integer>> adj) {
+        
+        
+        int n = adj.size();
+        ans = new ArrayList<>();
+        boolean[] visited = new boolean[n];
+        
+        bfs(adj , visited , 0);
+        
+        
+        return ans;
+        
+    }
+}
