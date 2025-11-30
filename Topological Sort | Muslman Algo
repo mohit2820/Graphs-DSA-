@@ -1,0 +1,50 @@
+https://www.geeksforgeeks.org/problems/topological-sort/1
+class Solution {
+    public static ArrayList<Integer> topoSort(int V, int[][] edges) {
+        
+        
+        ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+        int[] inDegree = new int[V];
+        ArrayList<Integer> ans = new ArrayList<>();
+        Queue<Integer> q = new ArrayDeque<>();
+        int e = edges.length;
+        
+        
+        for(int i=0; i<V; i++) adj.add(new ArrayList<>());
+        
+        // add the edges 
+        for(int i=0; i<e; i++){
+            
+            int u = edges[i][0];
+            int v = edges[i][1];
+            
+            adj.get(u).add(v);
+        }
+        
+        
+        // calculate in-Degree
+        for(int i=0; i<V; i++)
+        for(int j=0; j<adj.get(i).size(); j++) inDegree[adj.get(i).get(j)]++;
+        
+        
+        
+        // 0 in degree walo ko push kardo 
+        for(int i=0; i<V; i++) if(inDegree[i]==0) q.add(i);
+        
+        while(!q.isEmpty()){
+            
+            int top = q.poll();
+            ans.add(top);     // main ans. list mai bi topological order store kardo 
+            
+            for(int i=0; i<adj.get(top).size(); i++){
+                
+                int current = adj.get(top).get(i);
+                inDegree[current]--;   // neighbour ki indgree minus karo 
+                if(inDegree[current]==0) q.add(current);    // agar indegree neighbour ki 0 ho gyi to queue mai dal do 
+            }
+        }
+         
+    
+    return ans;  
+    }
+}
