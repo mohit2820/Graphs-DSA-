@@ -1,0 +1,77 @@
+https://www.geeksforgeeks.org/problems/detect-cycle-in-an-undirected-graph/1
+
+class Solution {
+    
+    boolean cycleDetectBfs(ArrayList<ArrayList<Integer>> adj , int node , int parent , boolean[] visited){
+        
+        Queue<Pair> q = new LinkedList<>();
+        q.add(new Pair(node , parent));   // 0 -> vertex , -1 -> parent 
+        visited[node] = true;
+        
+        
+        while(!q.isEmpty()){
+            
+            Pair pair = q.poll();
+            int inNode = pair.node;
+            int inParent = pair.parent;
+            
+            for(int i=0; i<adj.get(inNode).size(); i++){
+                
+                int current = adj.get(inNode).get(i);
+                
+                if(current==inParent) continue;
+                
+                else if(visited[current]) return true;
+                
+                // node visit nhi hua hai to mark karo or add karo 
+                visited[current] = true;
+                q.add(new Pair(current , inNode));
+            }
+            
+        }
+        
+        return false;
+    }
+    public boolean isCycle(int V, int[][] edges) {
+        
+        
+        ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+        boolean[] visited = new boolean[V];
+        
+        for(int i=0; i<V; i++) adj.add(new ArrayList<>());
+        
+        for(int i=0; i<edges.length; i++){
+            
+            int u = edges[i][0];  // vertex
+            int v = edges[i][1];  // edges
+            
+            adj.get(u).add(v);
+            adj.get(v).add(u);  
+        }
+        
+        
+        for(int i=0; i<V; i++){
+            
+            if(!visited[i]){
+                
+                if(cycleDetectBfs(adj , i , -1 , visited)) return true;
+            }
+        }
+        
+        
+        return false;
+
+    }
+}
+
+
+// custom class 
+class Pair {
+    
+    int node , parent; 
+    
+    Pair(int node , int parent){
+        this.node = node;
+        this.parent = parent;
+    }
+}
